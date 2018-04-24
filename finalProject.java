@@ -5,7 +5,7 @@ import java.awt.event.*;
 public class finalProject {
     public finalProject() {
         // Creating the Frame
-        JFrame frame = new JFrame("Final Projedct");
+        JFrame frame = new JFrame("Final Project");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(800, 600));
         frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.PAGE_AXIS));
@@ -38,13 +38,16 @@ public class finalProject {
 
 
 
-        // search bar (add event listener)
-        JButton label = new JButton("Search");
-        JTextField tf = new JTextField(10);
+        /** 
+         *  SearchBar
+         *  <p>
+         *  This search bar searches records against the hashmap
+         *  for names and phone numbers
+         */
+        
+        
 
-        // JButton reset = new JButton("Reset");
-        search.add(label);
-        search.add(tf);
+         
         frame.add(search);
         // panel.add(send);
         // panel.add(reset);
