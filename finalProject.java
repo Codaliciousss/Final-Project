@@ -5,10 +5,10 @@ import java.awt.event.*;
 public class finalProject {
     public static void main(String args[]) {
 
-        //Creating the Frame
-        JFrame frame = new JFrame("Chat Frame");
+        // Creating the Frame
+        JFrame frame = new JFrame("Final Projedct");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 900);
+        frame.setMinimumSize(new Dimension(800, 600));
         frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.PAGE_AXIS));
 
         // Panels
@@ -18,7 +18,7 @@ public class finalProject {
 
 
 
-        //Creating the MenuBar and adding components
+        // Creating the MenuBar and adding components
         JMenuBar mb = new JMenuBar();
         JMenu m1 = new JMenu("FILE");
         mb.add(m1);
@@ -30,8 +30,7 @@ public class finalProject {
 
         JTable table = new JTable(50, 2);
         JScrollPane scrollPane = new JScrollPane(table);
-        table.setFillsViewportHeight(true);
-        scrollPane.setMinimumSize(new Dimension(480,300));
+        scrollPane.setMaximumSize(new Dimension(800,300));
         display.add(scrollPane);
         frame.add(display);
 
