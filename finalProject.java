@@ -3,8 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class finalProject {
-    public static void main(String args[]) {
-
+    public finalProject() {
         // Creating the Frame
         JFrame frame = new JFrame("Final Projedct");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -60,5 +59,11 @@ public class finalProject {
       //  frame.getContentPane().add(BorderLayout.[]k[]], mb);
         //frame.getContentPane().add(BorderLayout.CENTER, ta);
         // frame.setVisible(true);
+    }
+
+    public static void main(String args[]) {
+        SwingUtilities.invokeLater(() -> {
+            new finalProject();
+        });
     }
 }
