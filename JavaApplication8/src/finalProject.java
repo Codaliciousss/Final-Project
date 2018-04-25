@@ -14,7 +14,7 @@ public class finalProject {
      * phoneBook key = name val = number
      * rphoneBook key = number val = name
      */
-    Map<String,String>fileBook = new HashMap<>();
+    Map<String,String> fileBook = new HashMap<>();
     DefaultTableModel model = new DefaultTableModel();
 
     public finalProject() {
@@ -35,7 +35,6 @@ public class finalProject {
         JPanel search = new JPanel(new FlowLayout());
         JPanel display = new JPanel(new GridLayout(0,1));
         JPanel add = new JPanel(new FlowLayout());
-
 
         /**
          *  Menu Bar
@@ -103,8 +102,6 @@ public class finalProject {
             else
             {
                 System.out.println("info saved");
-//                phoneBook.put(nameTF.getText(), phoneTF.getText());
-//                rphoneBook.put(phoneTF.getText(), nameTF.getText()); 
                 fileBook.put(nameTF.getText(), phoneTF.getText());
 
                 writeMapToFile(fileBook,"output.txt");
@@ -125,14 +122,37 @@ public class finalProject {
          *  for names and phone numbers
          */
         Button searchB = new Button("Search");
-        TextField searchTF = new TextField(60);
+        TextField searchTF = new TextField(50);
         search.add(searchTF);
         search.add(searchB);
 
-
-
-        
-
+        // Function to search button
+        searchB.addActionListener(e -> {
+            String criteriaName;
+            int criteriaPhone;
+            String input;
+            // Checking pre-condition
+            if (searchTF.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(frame.getContentPane(),
+                                            "Please search either a name or phone number or both",
+                                            "Warning",
+                                            JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            else {
+                // Removes all non-word and non-whitespace
+                input = searchTF.getText().replaceAll("[^\\w\\s]", "");
+            }
+            // Parsing
+            // Removes all non-characters and non-whitespace
+            criteriaName = input.replaceAll("[^a-zA-Z\\s]", "");
+            System.out.println(criteriaName);
+            // Removes all non-digits and checks if its 10 digits
+            criteriaPhone = Integer.parseInt(input.replaceAll("\\D", "").isEmpty()?
+                            "-1" : input.replaceAll("\\D", "").length() != 10?
+                            "-1" : input.replaceAll("\\D", ""));
+            System.out.println(criteriaPhone);
+        });
 
         frame.add(mb);  // Menu bar
         frame.add(display);   // Table
