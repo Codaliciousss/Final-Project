@@ -138,7 +138,6 @@ public class finalProject {
                                             JOptionPane.WARNING_MESSAGE);
                 }      
             }
-            
         });
         
 
@@ -160,7 +159,7 @@ public class finalProject {
             String criteriaName;
             String criteriaPhone;
             String input;
-            // Checking pre-condition
+            /** Checking pre-condition */
             if (searchTF.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(frame.getContentPane(),
                                             "Please search either a name or phone number or both",
@@ -180,32 +179,56 @@ public class finalProject {
                 // Removes all non-word and non-whitespace
                 input = searchTF.getText().replaceAll("[^\\w\\s]", "");
             }
-            // Parsing
+            /** Parsing */
             // Removes all non-characters and non-whitespace
             criteriaName = input.replaceAll("[^a-zA-Z\\s]", "");
-            // Removes all non-digits and checks if it's 10 digits
-            criteriaPhone = input.replaceAll("\\D", "").length() == 10?
-                            input.replaceAll("\\D", "") :
-                            "-1";
-            // Begin Search
+            // Removes all non-digits
+            criteriaPhone = input.replaceAll("\\D", "");
+            /** Begin search */
+            // Flush table
             model.setRowCount(0);
+
+            ArrayList<Object[]> results = new ArrayList<Object[]>();
             // Searching with name
-            if (criteriaName.isEmpty()) {
-                System.out.println("Not searching this");
-            }
-            else {
+            if (!criteriaName.isEmpty()) {
                 // Search using pattern-matcher
                 // Searching for [Aa]*
                 Pattern pattern = Pattern.compile("[" + criteriaName.substring(0,1).toUpperCase() +
                                                 criteriaName.substring(0,1).toLowerCase() + "]" +
-                                                criteriaName.substring(1) + ".*");
+                                                criteriaName.substring(1).trim() + ".*");
                 System.out.println("Searching for " + criteriaName);
                 for(Map.Entry<String, String> entry : fileBook.entrySet()) {
                     Matcher matcher = pattern.matcher(entry.getKey());
                     if (matcher.matches()) {
-                        model.addRow(new Object[]{entry.getKey(), entry.getValue()});
+                        System.out.println(entry.getKey() + ", " + entry.getValue());
+                        results.add(new Object[]{entry.getKey(), entry.getValue()});
                     }
                 }
+            }
+            // Searching with phone
+            if (!criteriaPhone.isEmpty()) {
+                // Searching using pattern-matcher
+                // Searching for [0-9]*
+                Pattern patternP = Pattern.compile(criteriaPhone + ".*");
+                System.out.println("Searching for " + criteriaPhone);
+                for(Map.Entry<String, String> entry : fileBook.entrySet()) {
+                    Matcher matcherP = patternP.matcher(entry.getValue());
+                    if (matcherP.matches()) {
+                        boolean exists = false;
+                        for (int i = 0; i < model.getRowCount(); i++) {
+                            System.out.println(model.getValueAt(i, 0));
+                            if (model.getValueAt(i, 0).equals(entry.getKey())) {
+                                exists = true;
+                            }
+                        }
+                        if (!exists) {
+                            results.add(new Object[]{entry.getKey(), entry.getValue()});
+                        }
+                    }
+                }
+            }
+            for (Object[] o : results) {
+                model.addRow(o);
             }
         });
 
@@ -249,7 +272,7 @@ public class finalProject {
      * @param filename
      * @return 
      */
-    public static Map<String,String> readFile( String filename ) throws Exception
+    public Map<String,String> readFile( String filename ) throws Exception
     {
         Map <String,String> x = new HashMap<String,String>();
         File file = new File(filename);
@@ -265,9 +288,6 @@ public class finalProject {
         scanner.close(); 
         return x;
     } 
-    
-    
-    
 
     public static void main(String args[]) {
         SwingUtilities.invokeLater(() -> {
