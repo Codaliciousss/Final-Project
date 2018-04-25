@@ -9,7 +9,14 @@ import java.io.PrintWriter;
 import java.util.*;
 
 public class finalProject {
-    File records = new File("output.txt");
+    /**
+     * Creating Map objects
+     * phoneBook key = name val = number
+     * rphoneBook key = number val = name
+     */
+    Map<String,String>fileBook = new HashMap<>();
+    DefaultTableModel model = new DefaultTableModel();
+
     public finalProject() {
         // Creating the Frame
         JFrame frame = new JFrame("Final Project");
@@ -17,20 +24,7 @@ public class finalProject {
         frame.setMinimumSize(new Dimension(800, 600));
         frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.PAGE_AXIS));
         
-        /**
-         * Creating Map objects
-         * phoneBook key = name val = number
-         * rphoneBook key = number val = name
-         */
         
-        Map<String,String>phoneBook;
-        phoneBook = new HashMap<>();
-        
-        Map<String,String>rphoneBook;
-        rphoneBook = new HashMap<>();
-        
-        Map<String,String>fileBook;
-        fileBook = readFile(records.getName());
         
         
         
@@ -59,28 +53,27 @@ public class finalProject {
         JFileChooser fc = new JFileChooser();
         m11.addActionListener(e -> {
             int returnValue = fc.showOpenDialog(null);
-
             if (returnValue == JFileChooser.APPROVE_OPTION) {
-                records = fc.getSelectedFile();
+                fileBook = readFile(fc.getSelectedFile().getName());
+                // Fill in table
+                for(Map.Entry<String, String> entry : fileBook.entrySet()) {
+                    model.addRow(new Object[]{entry.getKey(), entry.getValue()});
+                }
             }
         });
 
         /**
          *  Table
          */
-        DefaultTableModel model = new DefaultTableModel();
         JTable table = new JTable();
         table.setModel(model);
         model.addColumn("Name");
         model.addColumn("Phone number");
-        
-        int i = 0;
+
         for(Map.Entry<String, String> entry : fileBook.entrySet()) {
             model.addRow(new Object[]{entry.getKey(), entry.getValue()});
         }
-        
-        table.repaint();
-        //table.setValueAt("Hello", 0, 1);
+
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setMaximumSize(new Dimension(800,300));
         display.add(scrollPane);
@@ -119,7 +112,7 @@ public class finalProject {
 
                 nameTF.setText("");
                 phoneTF.setText("");
-                System.out.println(phoneBook.keySet());
+                System.out.println(fileBook.keySet());
             }
             
         });
