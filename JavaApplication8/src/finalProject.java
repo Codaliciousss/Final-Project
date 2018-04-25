@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -8,7 +9,7 @@ import java.io.PrintWriter;
 import java.util.*;
 
 public class finalProject {
-    File records;
+    File records = new File("output.txt");
     public finalProject() {
         // Creating the Frame
         JFrame frame = new JFrame("Final Project");
@@ -27,6 +28,12 @@ public class finalProject {
         
         Map<String,String>rphoneBook;
         rphoneBook = new HashMap<>();
+        
+        Map<String,String>fileBook;
+        fileBook = readFile(records.getName());
+        
+        
+        
 
         /**
          *  Panel
@@ -61,7 +68,19 @@ public class finalProject {
         /**
          *  Table
          */
-        JTable table = new JTable(50, 2);
+        DefaultTableModel model = new DefaultTableModel();
+        JTable table = new JTable();
+        table.setModel(model);
+        model.addColumn("Name");
+        model.addColumn("Phone number");
+        
+        int i = 0;
+        for(Map.Entry<String, String> entry : fileBook.entrySet()) {
+            model.addRow(new Object[]{entry.getKey(), entry.getValue()});
+        }
+        
+        table.repaint();
+        //table.setValueAt("Hello", 0, 1);
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setMaximumSize(new Dimension(800,300));
         display.add(scrollPane);
@@ -91,10 +110,12 @@ public class finalProject {
             else
             {
                 System.out.println("info saved");
-                phoneBook.put(nameTF.getText(), phoneTF.getText());
-                rphoneBook.put(phoneTF.getText(), nameTF.getText()); 
-                
-                writeMapToFile(phoneBook,"output.txt");
+//                phoneBook.put(nameTF.getText(), phoneTF.getText());
+//                rphoneBook.put(phoneTF.getText(), nameTF.getText()); 
+                fileBook.put(nameTF.getText(), phoneTF.getText());
+
+                writeMapToFile(fileBook,"output.txt");
+                model.addRow(new Object[]{nameTF.getText(), phoneTF.getText()});
 
                 nameTF.setText("");
                 phoneTF.setText("");
@@ -165,16 +186,17 @@ public class finalProject {
         Map <String,String> x = new HashMap<String,String>();
         try
         {
-        File file = new File(filename);
-        Scanner scanner = new Scanner(file);
-        while (scanner.hasNext()){
-          String line = scanner.nextLine();
-          int delimiter = line.indexOf("|");
-          String key = line.substring(0,delimiter);
-          String value = line.substring(delimiter+1);
-          x.put(key,value);
-        }
-        scanner.close();
+            File file = new File(filename);
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNext())
+            {
+              String line = scanner.nextLine();
+              int delimiter = line.indexOf("|");
+              String key = line.substring(0,delimiter);
+              String value = line.substring(delimiter+1);
+              x.put(key,value);
+            }
+            scanner.close();
         } 
         catch (FileNotFoundException e)
         {
