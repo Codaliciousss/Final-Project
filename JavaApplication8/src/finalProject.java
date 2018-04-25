@@ -8,6 +8,9 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.*;
 
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
 public class finalProject {
     /**
      * Creating Map objects
@@ -74,11 +77,6 @@ public class finalProject {
         table.setModel(model);
         model.addColumn("Name");
         model.addColumn("Phone number");
-
-        for(Map.Entry<String, String> entry : fileBook.entrySet()) {
-            model.addRow(new Object[]{entry.getKey(), entry.getValue()});
-        }
-
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setMaximumSize(new Dimension(800,300));
         display.add(scrollPane);
@@ -148,7 +146,9 @@ public class finalProject {
          *  SearchBar
          *  
          *  This search bar searches records against the hashmap
-         *  for names and phone numbers
+         *  for names and phone numbers.
+         *  The search method loops through the hashmap to look for
+         *  similar name and phone number.
          */
         Button searchB = new Button("Search");
         TextField searchTF = new TextField(50);
@@ -168,6 +168,14 @@ public class finalProject {
                                             JOptionPane.WARNING_MESSAGE);
                 return;
             }
+            else if (fileBook.isEmpty()) {
+                JOptionPane.showMessageDialog(frame.getContentPane(),
+                                            "There are no available records to be searched\n" +
+                                            "Please import records first",
+                                            "Warning",
+                                            JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             else {
                 // Removes all non-word and non-whitespace
                 input = searchTF.getText().replaceAll("[^\\w\\s]", "");
@@ -175,17 +183,29 @@ public class finalProject {
             // Parsing
             // Removes all non-characters and non-whitespace
             criteriaName = input.replaceAll("[^a-zA-Z\\s]", "");
-            System.out.println(criteriaName);
-            // Removes all non-digits and checks if its 10 digits
+            // Removes all non-digits and checks if it's 10 digits
             criteriaPhone = input.replaceAll("\\D", "").length() == 10?
                             input.replaceAll("\\D", "") :
                             "-1";
+            // Begin Search
+            model.setRowCount(0);
             // Searching with name
             if (criteriaName.isEmpty()) {
                 System.out.println("Not searching this");
             }
             else {
-                
+                // Search using pattern-matcher
+                // Searching for [Aa]*
+                Pattern pattern = Pattern.compile("[" + criteriaName.substring(0,1).toUpperCase() +
+                                                criteriaName.substring(0,1).toLowerCase() + "]" +
+                                                criteriaName.substring(1) + ".*");
+                System.out.println("Searching for " + criteriaName);
+                for(Map.Entry<String, String> entry : fileBook.entrySet()) {
+                    Matcher matcher = pattern.matcher(entry.getKey());
+                    if (matcher.matches()) {
+                        model.addRow(new Object[]{entry.getKey(), entry.getValue()});
+                    }
+                }
             }
         });
 
