@@ -11,8 +11,7 @@ import java.util.*;
 public class finalProject {
     /**
      * Creating Map objects
-     * phoneBook key = name val = number
-     * rphoneBook key = number val = name
+     * fileBook holds all records of the file
      */
     Map<String,String> fileBook = new HashMap<>();
     DefaultTableModel model = new DefaultTableModel();
@@ -23,11 +22,6 @@ public class finalProject {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(800, 600));
         frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.PAGE_AXIS));
-        
-        
-        
-        
-        
 
         /**
          *  Panel
@@ -50,13 +44,19 @@ public class finalProject {
          *  File Chooser
          */
         JFileChooser fc = new JFileChooser();
+        fc.setCurrentDirectory(new File(System.getProperty("user.dir")));
         m11.addActionListener(e -> {
             int returnValue = fc.showOpenDialog(null);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
-                fileBook = readFile(fc.getSelectedFile().getName());
-                // Fill in table
-                for(Map.Entry<String, String> entry : fileBook.entrySet()) {
-                    model.addRow(new Object[]{entry.getKey(), entry.getValue()});
+                try {
+                    fileBook = readFile(fc.getSelectedFile().getName());
+                    // Clear and fill in table
+                    model.setRowCount(0);
+                    for(Map.Entry<String, String> entry : fileBook.entrySet()) {
+                        model.addRow(new Object[]{entry.getKey(), entry.getValue()});
+                    }
+                } catch (Exception ex) {
+                    System.out.println("Problem reading map from file " + ex);
                 }
             }
         });
@@ -91,25 +91,48 @@ public class finalProject {
         add.add(phoneTF);
         add.add(addB);
         
-        //function to add button
+        // Function to add button
         addB.addActionListener((ActionEvent e) -> 
         {
             if(nameTF.getText().isEmpty() || phoneTF.getText().isEmpty())
             {
-                System.out.println("text is not empty");
-                JOptionPane.showMessageDialog(null,"Please Enter A Name And PhoneNumber");
+                JOptionPane.showMessageDialog(frame.getContentPane(),
+                                            "Please enter a name and phone number",
+                                            "Missing info",
+                                            JOptionPane.WARNING_MESSAGE);
             }
             else
             {
-                System.out.println("info saved");
-                fileBook.put(nameTF.getText(), phoneTF.getText());
+                String name = nameTF.getText().replaceAll("[^\\w\\s]", "")
+                                                .replaceAll("[^a-zA-Z\\s]", "");
+                String phone = phoneTF.getText().replaceAll("\\D", "").length() == 10?
+                                phoneTF.getText().replaceAll("\\D", ""): "";
 
-                writeMapToFile(fileBook,"output.txt");
-                model.addRow(new Object[]{nameTF.getText(), phoneTF.getText()});
-
-                nameTF.setText("");
-                phoneTF.setText("");
-                System.out.println(fileBook.keySet());
+                if (!name.isEmpty() && !phone.isEmpty()) {
+                    int n = JOptionPane.showConfirmDialog(frame.getContentPane(),
+                                                "Are you sure you want to add the following contact?\n" +
+                                                name + "\n" + phone,
+                                                "Confirmation",
+                                                JOptionPane.YES_NO_OPTION,
+                                                JOptionPane.QUESTION_MESSAGE);
+                    if (n == JOptionPane.YES_OPTION) {
+                        fileBook.put(name, phone);
+                        writeMapToFile(fileBook,"output.txt");
+                        model.addRow(new Object[]{name, phone});
+                        nameTF.setText("");
+                        phoneTF.setText("");
+                        System.out.println(fileBook.keySet());
+                    }
+                    else {
+                        return;
+                    }
+                }
+                else {
+                    JOptionPane.showMessageDialog(frame.getContentPane(),
+                                            "Please enter a valid name and phone number(10 digits)",
+                                            "Warning",
+                                            JOptionPane.WARNING_MESSAGE);
+                }      
             }
             
         });
@@ -129,7 +152,7 @@ public class finalProject {
         // Function to search button
         searchB.addActionListener(e -> {
             String criteriaName;
-            int criteriaPhone;
+            String criteriaPhone;
             String input;
             // Checking pre-condition
             if (searchTF.getText().isEmpty()) {
@@ -148,10 +171,16 @@ public class finalProject {
             criteriaName = input.replaceAll("[^a-zA-Z\\s]", "");
             System.out.println(criteriaName);
             // Removes all non-digits and checks if its 10 digits
-            criteriaPhone = Integer.parseInt(input.replaceAll("\\D", "").isEmpty()?
-                            "-1" : input.replaceAll("\\D", "").length() != 10?
-                            "-1" : input.replaceAll("\\D", ""));
-            System.out.println(criteriaPhone);
+            criteriaPhone = input.replaceAll("\\D", "").length() == 10?
+                            input.replaceAll("\\D", "") :
+                            "-1";
+            // Searching with name
+            if (criteriaName.isEmpty()) {
+                System.out.println("Not searching this");
+            }
+            else {
+                
+            }
         });
 
         frame.add(mb);  // Menu bar
@@ -170,7 +199,7 @@ public class finalProject {
      */
      public static void writeMapToFile(Map<String,String>d,String filename)
      {
-        System.out.println("method called");
+        System.out.println("method called: writeMapToFile");
         System.out.println(filename);
         try 
         {
@@ -194,27 +223,20 @@ public class finalProject {
      * @param filename
      * @return 
      */
-    public static Map<String,String> readFile( String filename )
+    public static Map<String,String> readFile( String filename ) throws Exception
     {
         Map <String,String> x = new HashMap<String,String>();
-        try
+        File file = new File(filename);
+        Scanner scanner = new Scanner(file);
+        while (scanner.hasNext())
         {
-            File file = new File(filename);
-            Scanner scanner = new Scanner(file);
-            while (scanner.hasNext())
-            {
-              String line = scanner.nextLine();
-              int delimiter = line.indexOf("|");
-              String key = line.substring(0,delimiter);
-              String value = line.substring(delimiter+1);
-              x.put(key,value);
-            }
-            scanner.close();
-        } 
-        catch (FileNotFoundException e)
-        {
-            System.out.println("Problem reading map from file "+e);
+            String line = scanner.nextLine();
+            int delimiter = line.indexOf("|");
+            String key = line.substring(0,delimiter);
+            String value = line.substring(delimiter+1);
+            x.put(key,value);
         }
+        scanner.close(); 
         return x;
     } 
     
