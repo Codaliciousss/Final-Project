@@ -13,8 +13,8 @@ public class finalProject {
      * Creating Map objects
      * fileBook holds all records of the file
      */
-    Map<String,String> fileBook = new HashMap<>();
-    DefaultTableModel model = new DefaultTableModel();
+    private Map<String,String> fileBook = new HashMap<>();
+    private DefaultTableModel model = new DefaultTableModel();
 
     public finalProject() {
         // Creating the Frame
@@ -63,8 +63,14 @@ public class finalProject {
 
         /**
          *  Table
+         *  
+         *  This creates a non-editable table for displaying info
          */
-        JTable table = new JTable();
+        JTable table = new JTable() {
+            public boolean isCellEditable(int row, int column) {                
+                return false;               
+            }
+        };
         table.setModel(model);
         model.addColumn("Name");
         model.addColumn("Phone number");
@@ -197,7 +203,7 @@ public class finalProject {
      * @param filename 
      * name of the file it will store information too
      */
-     public static void writeMapToFile(Map<String,String>d,String filename)
+     public void writeMapToFile(Map<String,String>d,String filename)
      {
         System.out.println("method called: writeMapToFile");
         System.out.println(filename);
