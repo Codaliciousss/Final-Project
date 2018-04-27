@@ -188,7 +188,7 @@ public class finalProject {
             // Flush table
             model.setRowCount(0);
 
-            ArrayList<Object[]> results = new ArrayList<Object[]>();
+            Set<Object[]> results = new HashSet<Object[]>();
             // Searching with name
             if (!criteriaName.isEmpty()) {
                 // Search using pattern-matcher
@@ -214,16 +214,7 @@ public class finalProject {
                 for(Map.Entry<String, String> entry : fileBook.entrySet()) {
                     Matcher matcherP = patternP.matcher(entry.getValue());
                     if (matcherP.matches()) {
-                        boolean exists = false;
-                        for (int i = 0; i < model.getRowCount(); i++) {
-                            System.out.println(model.getValueAt(i, 0));
-                            if (model.getValueAt(i, 0).equals(entry.getKey())) {
-                                exists = true;
-                            }
-                        }
-                        if (!exists) {
-                            results.add(new Object[]{entry.getKey(), entry.getValue()});
-                        }
+                        results.add(new Object[]{entry.getKey(), entry.getValue()});
                     }
                 }
             }
